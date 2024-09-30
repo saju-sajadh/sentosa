@@ -31,16 +31,16 @@ MAX_FRACTION_OF_GPU_TO_USE = 0.4
 IS_DRAW_FPS = True
 
 # -- Helper functions
-def _set_logger():
-    logger = logging.getLogger('TfPoseEstimator')
-    logger.setLevel(logging.DEBUG)
-    logging_stream_handler = logging.StreamHandler()
-    logging_stream_handler.setLevel(logging.DEBUG)
-    logging_formatter = logging.Formatter(
-        '[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s')
-    logging_stream_handler.setFormatter(logging_formatter)
-    logger.addHandler(logging_stream_handler)
-    return logger
+# def _set_logger():
+#     logger = logging.getLogger('TfPoseEstimator')
+#     logger.setLevel(logging.DEBUG)
+#     logging_stream_handler = logging.StreamHandler()
+#     logging_stream_handler.setLevel(logging.DEBUG)
+#     logging_formatter = logging.Formatter(
+#         '[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s')
+#     logging_stream_handler.setFormatter(logging_formatter)
+#     logger.addHandler(logging_stream_handler)
+#     return logger
 
 def _set_config():
     ''' Set the max GPU memory to use '''
@@ -88,7 +88,7 @@ class SkeletonDetector(object):
         self._cnt_image = 0
         
         # -- Set logger
-        self._logger = _set_logger()
+        # self._logger = _set_logger()
         
 
     def detect(self, image):
@@ -122,7 +122,7 @@ class SkeletonDetector(object):
 
         # Print result and time cost
         elapsed = time.time() - t
-        self._logger.info('inference image in %.4f seconds.' % (elapsed))
+        # self._logger.info('inference image in %.4f seconds.' % (elapsed))
 
         return humans
     
@@ -183,7 +183,7 @@ def test_openpose_on_webcamera():
         img = webcam_reader.read_image()
         if img is None:
             break
-        print(f"Read {i}th image...")
+        # print(f"Read {i}th image...")
 
         # Detect
         humans = skeleton_detector.detect(img)

@@ -6,6 +6,8 @@ import sys
 import os
 import logging
 from voiceOut import Voice_out
+from cameraindex import find_working_camera
+import ctypes
 
 if True:  # Include project path
     ROOT = os.path.dirname(os.path.abspath(__file__)) + "/../"
@@ -138,24 +140,27 @@ def control_led(mode, arduino):
     arduino.write((mode + "\n").encode())
 
 def Action_Detection(arduino):
-    
     # -- Detector, tracker, classifier
-   
     skeleton_detector = SkeletonDetector(OPENPOSE_MODEL, OPENPOSE_IMG_SIZE)
     multiperson_tracker = Tracker()
     multiperson_classifier = MultiPersonClassifier(SRC_MODEL_PATH, CLASSES)
 
     # Initialize webcam capture
-    cap = cv2.VideoCapture(1)  # Use 0 for default webcam
+    camera = find_working_camera()
+    cap = cv2.VideoCapture(camera)  # Use 0 for default webcam
     if not cap.isOpened():
         print("Error: Could not open webcam.")
         return
 
-    img_displayer = lib_images_io.ImageDisplayer()
+    # img_displayer = lib_images_io.ImageDisplayer()
 
     ith_img = -1
     dict_id2label = {}  # Initialize dict_id2label here
     action_thread = threading.current_thread()
+
+    # Set the window name
+    window_name = "Camera Feed"
+
     while cap.isOpened() and getattr(action_thread, "do_run", True):
         # -- Read image
         ret, img = cap.read()
@@ -165,7 +170,7 @@ def Action_Detection(arduino):
 
         ith_img += 1
         img_disp = img.copy()
-        print(f"\nProcessing {ith_img}th image ...")
+        # print(f"\nProcessing {ith_img}th image ...")
 
         # -- Detect skeletons
         humans = skeleton_detector.detect(img)
@@ -183,22 +188,30 @@ def Action_Detection(arduino):
 
         # -- Draw
         img_disp = draw_result_img(img_disp, ith_img, humans, dict_id2skeleton,
-                                skeleton_detector, multiperson_classifier, dict_id2label, scale_h)
+                                    skeleton_detector, multiperson_classifier, dict_id2label, scale_h)
+
+        # Resize the image
+        desired_width = 960
+        desired_height = 720
+        img_disp = cv2.resize(img_disp, (desired_width, desired_height))
 
         # Print label of a person
         if len(dict_id2skeleton):
             min_id = min(dict_id2skeleton.keys())
             print("predicted label is :", dict_id2label[min_id])
-            #updated
-            if(dict_id2label[min_id] == 'punch' or dict_id2label[min_id] == 'kick'):
-                Voice_out('oh oh dont do that. violence is strictly prohibited in this premises. ', arduino)
+            if dict_id2label[min_id] == 'punch':
+                Voice_out('oh oh dont do that. violence is strictly prohibited in this premises.', arduino)
                 control_led('action_mode', arduino)
-        # -- Display image, and write to video.avi
-        img_displayer.display(img_disp, wait_key_ms=1)
+
+        # -- Display image
+        # cv2.imshow(window_name, img_disp)
+
+        # Make the window always on top (Windows specific)
+        hwnd = ctypes.windll.user32.FindWindowW(None, window_name)
+        ctypes.windll.user32.SetWindowPos(hwnd, -1, 0, 0, 0, 0, 0x0001)
 
         if cv2.waitKey(1) == 27:  # Press 'ESC' to exit
             break
 
     cap.release()
     cv2.destroyAllWindows()
-
