@@ -1,0 +1,14 @@
+version: 1
+services:
+  - type: web
+    name: my-flask-app
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python src/app.py
+    envVars:
+      FLASK_ENV: production  # Set to 'development' if you want to run in development mode
+    healthCheckPath: /
+    healthCheckInterval: 10000  # Health check interval in milliseconds
+    healthCheckTimeout: 5000     # Timeout for health check in milliseconds
+    healthCheckGracePeriod: 60000 # Grace period for health check in milliseconds
