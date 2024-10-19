@@ -2,28 +2,65 @@ import os
 import google.generativeai as genai
 from dotenv import load_dotenv
 import re
+import time, threading
+from realtime import get_current_weather
+from google.generativeai.types.generation_types import StopCandidateException
 
 load_dotenv()
 
 genai.configure(api_key=os.getenv('API_KEY'))
 
-school_data ={
-  "name": "CHINMAYA",
-  "place": "Kollam",
-   "about": """
-        The education imparted in the Vidyalaya(means school) fulfills Pujya Gurudev Swami Chinmayananda’s Vision of Education. It enables all Chinmaya kids to bloom with bright hues and spread the fragrance. The presence of Chinmaya Mission Acharya and the Ashram give the Vidyalaya a spiritual ambience. The holy shrine of the Lord Ganesha gives the Vidyalaya a peaceful environment. Chinmaya Blossom, the play school is a feather in the cap of the Vidyalaya. The school is affiliated upto classes XII.
-        The Vidyalaya is equipped with the latest technology – hybrid teaching and learning and smart classrooms. Values are inculcated in the young minds with the text “Life, An Aradhana” and Chinmaya Vision Programme. The Vidyalaya curriculum includes the enrichment of communication and language skills, Yoga and co curricular activities.
-        The Vidyalaya was a long pending dream of the people of Kollam. It was first established on 23rd Oct 1985 at Manayilkulangara, Kollam. The Vidyalaya attained its gradual growth and classes upto VII started functioning was shifted to its new location at Chandanathope in 1996 under the leadership of Chinmaya Educational Trust, Thiruvananthapuram.
+# Global variable for realtime weather data
+realtime_data = None  # Initialized as None
+
+# Function to update the weather every minute
+def update_weather_data():
+    global realtime_data
+    while True:
+        # Fetch new weather data
+        realtime_data = get_current_weather(8.81, 76.75)
+        time.sleep(60) 
+
+school_data = {
+  "name": "Vimala Central School",
+  "place": "Chathannoor",
+  "about": """
+        Vimala Central School, Karamcodu, Kollam is Situated in the very near outskirt of the city of Kollam by the side of the National High-Way 66. Vimala Central School is celebrating its existence with glorious success. Greenery surroundings and tranquil atmosphere of the village, where the school is situated, enhance the feasibility of deep learning in a meditative mood. Learning here is a celebration; where teachers, students, parents and the society at large are engaged as a team in every step. We feel a harmony with the society and the whole nature. That is why the Celebration in our classrooms and campus becomes the cause of joy for all. Our school provides an ideal atmosphere for nurturing the innate talents and needs of young students.
     """,
-    "locations": {
-        "current location":"always outside first entrance door",
-        "second entrance": "go straight from first entrance",
-        "MD's cabin": "left to first entrance door",
-        "Media department": "left to second entrance door",
-        "toilet": "left side of media department.",
-        "work desk": "straight from second entrance and turn left.",
-        "Technical department": "left to the work desk."
-    }
+    "contact number": '8078378659',
+  
+}
+
+score_data = {
+    "Saint.JOHN'S SCHOOL, ANCHAL": "900 points",
+    "SARVODAYA CENTRAL VIDYALAYA, NALANCHIRA, TVM": "769 points",
+    "VIMALA CENTRAL SCHOOL, KARAMCODU": "717 points",
+    "BROOK INTERNATIONAL SCHOOL, SASTHAMCOTTAH": "699 points",
+    "GAYATHRI CENTRAL SCHOOL, KAYAMKULAM": "427 points",
+    "VISHWADEEPTHI SCHOOL, KATTAKADA": "366 points",
+    "Saint. JUDE SCHOOL, MUKHATHALA, KOLLAM": "318 points",
+    "KIPS, KARICKOM": "315 points",
+    "HOLY FAMILY PUBLIC SCHOOL, ANCHAL": "253 points",
+    "MAR BASELIOS SCHOOL, MARUTHAMONPALLY": "230 points",
+    "Saint. ANN'S CENTRAL SCHOOL, AYOOR": "225 points",
+    "MARY MATHA CENTRAL SCHOOL, POTHENCODE": "199 points",
+    "MAR BASELIOS PUBLIC SCHOOL, KAITHACODU": "162 points",
+    "MAR BASELIOS OCEAN STAR CENTRAL SCHOOL": "161 points",
+    "CHERUPUSHPA CENTRAL SCHOOL, AYOOR": "117 points",
+    "INFANT JESUS CENTRAL SCHOOL, THUVAYOOR": "113 points",
+    "CARMELGIRI CENTRAL SCHOOL, BHARATHEEPURAM": "109 points",
+    "INFANT JESUS SCHOOL, PONGUMMOODU": "108 points",
+    "VIMALA ENGLISH VIDYALAYA, KALATHARA, TVM": "105 points",
+    "WOODLEM PARK PUBLIC SCHOOL": "104 points",
+    "Saint. GEORGE CENTRAL SCHOOL, AMPALATHUMKALA": "81 points",
+    "Saint. JOSEPH'S PUBLIC SCHOOL, CHEMBOOR": "76 points",
+    "LOURD MATHA PUBLIC SCHOOL, MEENKULAM": "71 points",
+    "NGPM CENTRAL SCHOOL, VENCHEMPU": "58 points",
+    "PUSHPAGIRIYIL CENTRAL SCHOOL, EDAMON": "55 points",
+    "SHALINI BHAVAN SCHOOL, VEMANAPURAM": "48 points",
+    "Saint. MARY'S BETHANY, CENTRAL SCHOOL, VALAKOM": "39 points",
+    "MAR BASELIOS E M SCHOOL, KUTTAMALA": "10 points",
+    "MYSTICAL ROSE SCHOOL, VETTUCADU": "0 points"
 }
 
 generation_config = {
@@ -34,44 +71,48 @@ generation_config = {
   "response_mime_type": "text/plain",
 }
 
-model = genai.GenerativeModel(
-  model_name="gemini-1.5-flash",
-  generation_config=generation_config,
-  system_instruction=f"""
-    Your response should be short(mandatory except Locations) and easy to understand with proper punctuations avoiding emojis, astricks, and exclamations.
-    If the user asks about any institutions, talk about this Institution - {school_data['name']}.
-    The institution details are as follows:
-    Name: {school_data['name']}
-    Place: {school_data['place']}
-    About: {school_data['about']}
-    Locations: {school_data['locations']}
-    analyze and fetch only directions(left, right, etc..) from Locations not landmarks and provide in detail to the user
-    Otherwise, respond accordingly.
-    If the user asks to activate any mode, tell them to stop chat mode first.
-    Your name is Samartha.
-    If someone asks what your name is, then tell them your name is Samartha and you are made for interacting with students, analysing there emotions and assisting them.
-    your creator is Ttttecosa  solutions.
-  """
-)
-
 history = []
 
-
 def get_response(user_input):
+    global realtime_data  # Use the latest weather data
+    try:
+      # Update the system instructions with the latest weather data
+      system_instruction = f"""
+          Your response should not exceed more than two sentences. Response should be easily understandable without any special characters and emojis, except full stops and commas.
+          I am integrating you with a face recognition process, sometimes you will get face names like detected faces - ['name'], that are the person in front of you, talk to them.
+          If anyone asks about the weather or current location, here is the data: {realtime_data}. If it's a known person, talk to them like you know them before. {school_data} - Use this data if someone asks about the school, if anyone asked some locations in school you response should begin with code '111', its mandatory.
+          your name is sentosa, an AI powered reception assistant, built by vimala central school AI club, powered by Ttttecosa robotics, for helping students. you are at an event called sahodaya competition at this school, where various schools will participate and competete in it. here is the points data, which may change after sometime so if someone asks about score, tell them this as the last score when you checked the program, and answer like predicting the winner or winners. The program is  going to reach the end - {score_data}.
+      """
 
-    print('generating response...')
- 
-    chat_session = model.start_chat(
-        history=history
-    )
+      # Reinitialize the model with the updated system instructions
+      model = genai.GenerativeModel(
+          model_name="gemini-1.5-flash",
+          generation_config=generation_config,
+          system_instruction=system_instruction
+      )
 
-    response = chat_session.send_message(user_input)
+      print('Generating response...')
+  
+      chat_session = model.start_chat(history=history)
 
-    model_response = response.text
-    conversation = re.sub(r'[^\w\s.,.]+', '', model_response)
-    print(conversation)
+      response = chat_session.send_message(user_input)
 
-    history.append({"role": "user", "parts": [user_input]})
-    history.append({"role": "model", "parts": [model_response]})
+      model_response = response.text
+      conversation = re.sub(r'[^\w\s.,]+', '', model_response)
+      print(conversation)
 
-    return conversation
+      # Update history with the latest conversation
+      history.append({"role": "user", "parts": [user_input]})
+      history.append({"role": "model", "parts": [model_response]})
+
+      return conversation
+
+    except StopCandidateException as e:
+        # Handle the exception gracefully
+        print("The response was flagged for safety concerns:", e)
+        return "The response was flagged as unsafe. Please try rephrasing your input."
+
+weather_thread = threading.Thread(target=update_weather_data)
+weather_thread.daemon = True  
+weather_thread.start()
+

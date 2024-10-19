@@ -3,187 +3,96 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Samartha AI.</title>
+  <title>Sentosa AI.</title>
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <meta content="" name="keywords" />
   <meta content="" name="description" />
-
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.ico') }}">
-
-  <!-- Google Web Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500&family=Roboto:wght@500;700&display=swap"
     rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-  <!-- Icon Font Stylesheet -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
-
-  <!-- Libraries Stylesheet -->
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='lib/animate/animate.min.css') }}" />
-  <link rel="stylesheet" type="text/css"
-    href="{{ url_for('static', filename='lib/owlcarousel/assets/owl.carousel.min.css') }}" />
-
-  <!-- Customized Bootstrap Stylesheet -->
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
-
-  <!-- Template Stylesheet -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}" />
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body id="fullscreen-container">
-  <!-- Spinner Start -->
-  <div id="spinner"
-    class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-    <div class="spinner-grow text-primary" role="status"></div>
+<body class="h-screen css-selector" id="fullscreen-container">
+  <section  class="h-2/3 flex flex-col justify-center gap-10 items-center overflow-hidden">
+    <div id="sec" class="relative w-[98%] h-[98%] flex flex-col justify-center border border-[40px] border-teal-300 gap-10 items-center bg-black overflow-hidden rounded-[110px]">
+    <img src="{{ url_for('static', filename='img/eyes.gif') }}" alt="eyes" class="w-[800px] h-[360px] absolute"/>
+    <h1 id="main-heading" class="text-4xl md:text-6xl text-white text-center poppins-thin absolute bottom-16">
+      Hello <span id="fullscreen-btn">👋</span>, I am Sentosa
+    </h1>
   </div>
-  <!-- Spinner End -->
-
-
-
-
-  <!-- Header End -->
-  <section class="relative h-screen flex flex-col justify-center items-center">
-    <video autoplay loop muted id="video-background" class="absolute inset-0 w-full h-full object-cover">
-      <source src="{{ url_for('static', filename='img/robot eyes.mp4') }}" type="video/mp4" />
-    </video>
-    <div class="container flex flex-col items-center z-10">
-      <h1 id="main-heading" class="text-4xl md:text-6xl text-white text-center mb-6 poppins-thin pb-[40rem]">
-        Hello <span id="fullscreen-btn">👋</span>, I am Samartha
-      </h1>
-      <div class="absolute bottom-10 flex px-10 justify-between w-full ">
-        <button id="action-mode-button"
-          class="bn632-hover bn24"
-          onclick="toggleActionMode()">
-          <span id="action-mode-text">Surveillance Mode</span>
-        </button>
-        <button id="chat-mode-button"
-          class="bn632-hover bn24"
-          onclick="toggleChatMode()">
-          <span id="chat-mode-text">Interaction Mode</span>
-        </button>
+  </section>
+  <section class="relative w-full h-1/3 grid justify-center items-center overflow-hidden p-20">
+    <div class="w-screen flex justify-center h-full mx-20"> 
+      <div id="chat-container" style="display: none;"
+        class="absolute top-4 right-24 bg-white mt-1 mr-1 p-6 rounded-lg border border-[#e5e7eb] w-[440px] h-[550px] flex flex-col z-20">
+        <div class="flex flex-col space-y-1.5 pb-6">
+          <h2 class="font-semibold text-lg tracking-tight">SENTOSA</h2>
+          <p class="text-sm text-[#6b7280] leading-3">Powered by Techosa Edu Solutions</p>
+        </div>
+        <div id="chat-messages" class="flex-1 pr-4 overflow-y-auto overflow-x-hidden h-[calc(634px-120px)]">
+        </div>
       </div>
-    </div>
-    <div onclick="toggleChat()" id="toggleChat"
-      class="absolute top-4 right-4 inline-flex items-center justify-center text-sm font-medium border rounded-full w-16 h-16 bg-black hover:bg-gray-700 cursor-pointer">
-      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="40" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-        class="text-white block">
-        <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path>
-      </svg>
-    </div>
-
-    <!-- Chat Container (initially hidden) -->
-    <div id="chat-container" style="display: none;"
-      class="fixed top-24 right-0 mr-4 bg-white p-6 rounded-lg border border-[#e5e7eb] w-[440px] h-[634px] flex flex-col z-20">
-      <div class="flex flex-col space-y-1.5 pb-6">
-        <h2 class="font-semibold text-lg tracking-tight">Samartha</h2>
-        <p class="text-sm text-[#6b7280] leading-3">Powered by Techosa Edu Solutions</p>
+      <!-- <div id="images" class="w-[900px] h-[500px] rounded-xl"></div> -->
+      <div id="images" class="w-[900px] h-[500px] rounded-xl relative overflow-hidden">
+        <video autoplay muted loop class="absolute top-0 left-0 w-full h-full object-cover">
+          <source src="{{ url_for('static', filename='img/sahodaya.mp4') }}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
+      <div class="w-[900px] h-[500px] grid grid-cols-2 gap-5 justify-center items-center" style="display: none;" id="map"></div>
+      <div class="absolute px-2 right-0 bottom-0 z-50 w-24 h-full flex flex-col justify-center items-center mb-3">
+        <div class="flex flex-col items-center justify-end border rounded border-gray-200 px-2">
 
-      <!-- Chat Messages (Scrollable area) -->
-      <div id="chat-messages" class="flex-1 pr-4 overflow-y-auto overflow-x-hidden h-[calc(634px-120px)]">
-        <!-- Chat messages will be appended here -->
+          <button
+            class="inline-flex relative focus:outline-none flex-col items-center justify-center py-5 group">
+            <img src="{{ url_for('static', filename='img/mic.png') }}" alt="face"
+              class="w-10 h-10 mb-1 focus:outline-none text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500" />
+              <span id="listening" class="hidden animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+            </button>
+
+          <button onclick="toggleChat()" id="toggleChat"
+            class="inline-flex focus:outline-none flex-col items-center justify-center py-5 group">
+            <img src="{{ url_for('static', filename='img/messages.png') }}" alt="face"
+              class="w-10 h-10 mb-1 focus:outline-none text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500" />
+          </button>
+
+          <button id="chat-mode-button" onclick="toggleChatMode()" type="button"
+            class="inline-flex flex-col focus:outline-none items-center justify-center py-5 group">
+            <svg id="power-icon"
+              class="w-10 h-10 focus:outline-none mb-1 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+              height="800px" width="800px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+              <path style="fill:#E0E0E2;"
+                d="M256,512C114.84,512,0,397.16,0,256S114.84,0,256,0s256,114.84,256,256S397.16,512,256,512z" />
+              <path style="fill:#C7C5CA;" d="M256,0v512c141.16,0,256-114.84,256-256S397.16,0,256,0z" />
+              <g>
+                <path style="fill:#FF623F;" d="M256,399.61c-79.186,0-143.61-64.423-143.61-143.61c0-45.856,22.245-89.351,59.506-116.351
+                  c8.376-6.072,20.088-4.2,26.159,4.177c6.07,8.377,4.2,20.089-4.177,26.159c-27.567,19.976-44.025,52.13-44.025,86.015
+                  c0,58.529,47.617,106.146,106.146,106.146S362.146,314.529,362.146,256c0-34.897-17.238-67.604-46.112-87.49
+                  c-8.52-5.868-10.671-17.532-4.803-26.052c5.867-8.522,17.532-10.671,26.051-4.803C376.31,164.533,399.61,208.775,399.61,256
+                  C399.61,335.186,335.186,399.61,256,399.61z" />
+                <path style="fill:#FF623F;" d="M256,213.523c-10.345,0-18.732-8.387-18.732-18.732V95.557c0-10.345,8.387-18.732,18.732-18.732
+                  c10.345,0,18.732,8.387,18.732,18.732v99.234C274.732,205.136,266.345,213.523,256,213.523z" />
+              </g>
+              <g>
+                <path style="fill:#FF0536;" d="M337.282,137.656c-8.52-5.868-20.184-3.719-26.051,4.803c-5.868,8.52-3.718,20.184,4.803,26.052
+                  c28.874,19.886,46.112,52.592,46.112,87.49c0,58.529-47.617,106.146-106.146,106.146v37.463c79.186,0,143.61-64.423,143.61-143.61
+                  C399.61,208.775,376.31,164.533,337.282,137.656z" />
+                <path style="fill:#FF0536;" d="M256,76.825v136.698c10.345,0,18.732-8.387,18.732-18.732V95.557
+                  C274.732,85.211,266.345,76.825,256,76.825z" />
+              </g>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   </section>
-
-    <!-- Chat Container (initially hidden) -->
-    <div id="chat-container" style="display: none;"
-      class="fixed bottom-[calc(4rem+1.5rem)] right-0 mr-4 bg-white p-6 rounded-lg border border-[#e5e7eb] w-[440px] h-[634px] flex flex-col">
-      <div class="flex flex-col space-y-1.5 pb-6">
-        <h2 class="font-semibold text-lg tracking-tight">Tessa</h2>
-        <p class="text-sm text-[#6b7280] leading-3">Powered by Techosa Edu Solutions</p>
-      </div>
-
-      <!-- Chat Messages (Scrollable area) -->
-      <div id="chat-messages" class="flex-1 pr-4 overflow-y-auto overflow-x-hidden h-[calc(634px-120px)]">
-        <!-- Chat messages will be appended here -->
-      </div>
-    </div>
-  </section> 
-
-
-
-
-
-  <!-- JavaScript Libraries -->
-  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="{{ url_for('static', filename='lib/wow/wow.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='lib/easing/easing.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='lib/waypoints/waypoints.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='lib/owlcarousel/owl.carousel.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='lib/counterup/counterup.min.js') }}"></script>
-
-  <!-- Template Javascript -->
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-  <script>
-    $(document).ready(function () {
-      // Action Mode button click handler
-      $('#action-mode-button').click(function () {
-        $.ajax({
-          type: 'POST',
-          url: '/action_mode',
-          success: function (response) {
-            console.log(response.message); // You can replace this with a more sophisticated UI update
-          },
-          error: function () {
-            console.log('Failed to activate Action Mode.');
-          }
-        });
-      });
-
-      // Chat Mode button click handler
-      $('#chat-mode-button').click(function () {
-        $.ajax({
-          type: 'POST',
-          url: '/chat_mode',
-          success: function (response) {
-            console.log(response.message); // You can replace this with a more sophisticated UI update
-            toggleChat(); // Show chat container when chat mode is activated
-          },
-          error: function () {
-            console.log('Failed to activate Chat Mode.');
-          }
-        });
-      });
-    });
-    // Get the button and container elements
-    const fullscreenBtn = document.getElementById("fullscreen-btn");
-    const fullscreenContainer = document.getElementById(
-      "fullscreen-container"
-    );
-    fullscreenBtn.addEventListener("click", toggleFullScreen);
-    function toggleFullScreen() {
-      if (document.fullscreenEnabled) {
-        if (document.fullscreenElement) {
-          document.exitFullscreen();
-        } else {
-          fullscreenContainer.requestFullscreen();
-        }
-      } else {
-        console.log("Full screen mode is not supported by this browser.");
-      }
-    }
-
-  </script>
-
-  <script>
-    // Toggle the visibility of the chat container
-    function toggleChat() {
-      const chatContainer = document.getElementById('chat-container');
-      if (chatContainer.style.display === 'none' || chatContainer.style.display === '') {
-        chatContainer.style.display = 'block'; // Show the container
-      } else {
-        chatContainer.style.display = 'none'; // Hide the container
-      }
-    }
-  </script>
 </body>
 
 </html>
